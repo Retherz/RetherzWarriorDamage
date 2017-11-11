@@ -1,0 +1,10 @@
+## Interface: 11200
+## Title: |cffDA70D6R|rWarriorDamage
+## Version: 1.0.0
+## Notes: Command: /rwd
+## DefaultState: enabled
+## Dependencies: BonusScanner
+## Author: Retherz
+
+RWarriorDamage.lua
+RWarriorDamage.xml
