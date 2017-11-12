@@ -16,6 +16,16 @@ function CalculateDamage()
 	_, _, _, _, overpowerRank , _ = GetTalentInfo(1, 7);
 	_, _, _, _, impaleRank , _ = GetTalentInfo(1, 11);
 	_, _, _, _, flurryRank , _ = GetTalentInfo(2, 16);
+	_, _, _, _, unbridledWrath , _ = GetTalentInfo(2, 4);
+	_, _, _, _, heroicStrikeCost , _ = GetTalentInfo(1, 1);
+	if(heroicStrikeCost == nil) then
+		heroicStrikeCost = 0;
+	end
+	heroicStrikeCost = 15 - heroicStrikeCost;
+	if(unbridledWrath == nil) then
+		unbridledWrath = 0;
+	end
+	
 	if(flurryRank ~= nil) then
 		flurryRank = flurryRank + 1;
 	else
@@ -42,13 +52,6 @@ function CalculateDamage()
 	
 	baseAP, posBuffAP, negBuffAP = UnitAttackPower("player");
 	attackPower = baseAP + posBuffAP + negBuffAP;
-	--Normalized MH Weapon Damage
-	normalizedMHDamage = 0; --base_weapon_damage + (X * attackPower / 14) 2.4 DW, 3.3 2h
-	if(hasOffhand) then
-		normalizedMHDamage = (weaponDamageMH - (speedMH * attackPower / 14)) + (2.4 * attackPower / 14);
-	else
-		normalizedMHDamage = (weaponDamageMH - (speedMH * attackPower / 14)) + (3.3 * attackPower / 14);		--assuming main hand is 2h
-	end
 	
 	--Off hand crit
 	offHandCrit = critChance + (weaponSkillOH - weaponSkillMH) * 0.0004;
@@ -92,17 +95,86 @@ function CalculateDamage()
 	hitFromGear = BonusScanner:GetBonus("TOHIT");
 	hitBonus = (hitFromGear + hitFromWeaponSkillMH) / 100;
 	hitBonusOH = (hitFromGear + hitFromWeaponSkillOH) / 100;
+	SendMessage("-------------------");
+	
+	baseoverpowerDamage, baseflurryUptime, basewhirlwindDamage, basebloodthirstDamage, basedps, baseragePerSecond, basehsDamage = CalculateDPS(critChance, impaleRank, overpowerRank, dodgeChanceMH, hitBonus, missChance, hitBonusOH, dodgeChanceOH, offHandCrit, speedMH, speedOH,
+weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
+	normalDPS = dps;
+	SendMessage("OP: " .. baseoverpowerDamage .. " WW: " .. basewhirlwindDamage .. " BT: " .. basebloodthirstDamage);
+	SendMessage("Flurry uptime: " .. Round(baseflurryUptime * 100) .. "% Rage per Second: " .. Round(baseragePerSecond));
+	basehsPS = Round((baseragePerSecond - 7.5) / heroicStrikeCost);
+	basedpsFromHS = 0;
+	if(baseragePerSecond > 7.5) then
+		hspPerS = Round((1 / basehsPS) * 1.5);
+		SendMessage("Heroic Strikes 1 per " .. hspPerS .. " seconds.");
+		basedpsFromHS = (basehsDamage - weaponDamageMH) / hspPerS;
+	end
+	SendMessage("DPS: " .. Round(basedps + basedpsFromHS));
+	SendMessage("-------------------");
+	
+	-- recalcualte with +1 crit
+	SendMessage("Adding 1% Crit would result in: ");
+	
+	overpowerDamage, flurryUptime, whirlwindDamage, bloodthirstDamage, dps, ragePerSecond, hsDamage = CalculateDPS(critChance + 0.01, impaleRank, overpowerRank, dodgeChanceMH, hitBonus, missChance, hitBonusOH, dodgeChanceOH, offHandCrit + 0.01, speedMH, speedOH,
+weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
+	SendMessage("OP: +" .. Round(overpowerDamage - baseoverpowerDamage) .. " WW: +" .. Round(whirlwindDamage - basewhirlwindDamage) .. " BT: +" .. Round(bloodthirstDamage - basebloodthirstDamage));
+	SendMessage("Flurry uptime: +" .. Round((flurryUptime - baseflurryUptime)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
+	hsPS = Round((ragePerSecond - 7.5) / heroicStrikeCost);
+	dpsFromHS = 0;
+	if(baseragePerSecond > 7.5) then
+		hspPerS = Round((1 / hsPS) * 1.5);
+		SendMessage("Heroic Strikes 1 per " .. hspPerS .. " seconds.");
+		dpsFromHS = (hsDamage - weaponDamageMH) / hspPerS;
+	end
+	SendMessage("DPS: " .. Round((dps + dpsFromHS) - (basedps + basedpsFromHS))  .. " added dps.");
+	SendMessage("-------------------");
+	
+	-- recalcualte with +1 hit
+	SendMessage("Adding 1% hit would result in: ");
+	
+	overpowerDamage, flurryUptime, whirlwindDamage, bloodthirstDamage, dps, ragePerSecond, hsDamage = CalculateDPS(critChance, impaleRank, overpowerRank, dodgeChanceMH, hitBonus + 0.01, missChance, hitBonusOH + 0.01, dodgeChanceOH, offHandCrit, speedMH, speedOH,
+weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
+	SendMessage("OP: +" .. Round(overpowerDamage - baseoverpowerDamage) .. " WW: +" .. Round(whirlwindDamage - basewhirlwindDamage) .. " BT: +" .. Round(bloodthirstDamage - basebloodthirstDamage));
+	SendMessage("Flurry uptime: +" .. Round((flurryUptime - baseflurryUptime)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
+	hsPS = Round((ragePerSecond - 7.5) / heroicStrikeCost);
+	dpsFromHS = 0;
+	if(baseragePerSecond > 7.5) then
+		hspPerS = Round((1 / hsPS) * 1.5);
+		SendMessage("Heroic Strikes 1 per " .. hspPerS .. " seconds.");
+		dpsFromHS = (hsDamage - weaponDamageMH) / hspPerS;
+	end
+	SendMessage("DPS: " .. Round((dps + dpsFromHS) - (basedps + basedpsFromHS))  .. " added dps.");
+	SendMessage("-------------------");
+	
+	
+	
+	
+end
+
+function CalculateDPS(critChance, impaleRank, overpowerRank, dodgeChanceMH, hitBonus, missChance, hitBonusOH, dodgeChanceOH, offHandCrit, speedMH, speedOH,
+weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath)
+
 	critCapMH = 0.6 - dodgeChanceMH - missChance + hitBonus;
 	critCapOH = 0.6 - dodgeChanceOH - missChance + hitBonusOH;
-		SendMessage("Crit MH: " .. (critChance) * 100 .. "/" .. critCapMH * 100 .. "%");
-		if(hasOffhand) then
-			SendMessage("Crit OH: " .. (offHandCrit) * 100 .. "/" .. critCapOH * 100 .. "%");
-		end
+	if(critChance ~= offHandCrit and hasOffhand) then
+		SendMessage("Crit MH/Crit cap: " .. (critChance) * 100 .. "/" .. critCapMH * 100 .. "% Crit from Cap: " .. (critCapMH - critChance) * 100 .. "%");
+		SendMessage("Crit OH/Crit cap: " .. (offHandCrit) * 100 .. "/" .. critCapOH * 100 .. "% Crit from Cap: " .. (critCapMH - critChance) * 100 .. "%");
+	else
+		SendMessage("Crit/Crit cap: " .. (critChance) * 100 .. "/" .. critCapMH * 100 .. "% Crit from Cap: " .. (critCapMH - critChance) * 100 .. "%");		
+	end
 	AbilityHitChance = 0.92;
 	AbilityHitChance = AbilityHitChance + hitBonus;
 	if(AbilityHitChance > 1.00) then
 		AbilityHitChance = 1.00;
 	end
+	--Normalized MH Weapon Damage
+	normalizedMHDamage = 0; --base_weapon_damage + (X * attackPower / 14) 2.4 DW, 3.3 2h
+	if(hasOffhand) then
+		normalizedMHDamage = (weaponDamageMH - (speedMH * attackPower / 14)) + (2.4 * attackPower / 14);
+	else
+		normalizedMHDamage = (weaponDamageMH - (speedMH * attackPower / 14)) + (3.3 * attackPower / 14);		--assuming main hand is 2h
+	end
+	
 	overPowerCritChance, overpowerDamage = CalcOverpower(critChance, AbilityHitChance, impaleRank, overpowerRank, normalizedMHDamage);	--calculate overpower before adding dodge to save those precious IPSs.
 	AbilityHitChance = AbilityHitChance - dodgeChanceMH;
 	
@@ -110,28 +182,26 @@ function CalculateDamage()
 	offHandHits, offHandCrits, offHandMiss = CalcAAHitTable(hitBonusOH, dodgeChanceOH, offHandCrit, missChance);
 	flurryUptime = CalcFlurryUptime(speedMH, speedOH, critChance + dodgeChanceMH * overPowerCritChance, offHandCrit + dodgeChanceOH * overPowerCritChance)
 	
-	mainHandDPS = CalcAutoAttackDamage(weaponDamageMH, speedMH, mainHandHits, dodgeChanceMH, mainHandCrits, mainHandMiss, weaponSkillMH, overpowerDamage, flurryUptime, flurryRank * 0.05);
-	offHandDPS = 0;
+	ragePerSecond = 0.66;
+	
+	mainHandDPS, mainHandRage = CalcAutoAttackDamage(weaponDamageMH, speedMH, mainHandHits, dodgeChanceMH, mainHandCrits, mainHandMiss, weaponSkillMH, overpowerDamage, flurryUptime, flurryRank * 0.05, unbridledWrath);
+	offHandDPS, offHandRage = 0;
+	ragePerSecond = ragePerSecond + mainHandRage;
 		if(hasOffhand) then
-			offHandDPS = CalcAutoAttackDamage(weaponDamageOH, speedOH, offHandHits, dodgeChanceOH, offHandCrits, offHandMiss, weaponSkillOH, overpowerDamage, flurryUptime, flurryRank * 0.05);
+			offHandDPS, offHandRage = CalcAutoAttackDamage(weaponDamageOH, speedOH, offHandHits, dodgeChanceOH, offHandCrits, offHandMiss, weaponSkillOH, overpowerDamage, flurryUptime, flurryRank * 0.05, unbridledWrath);
+			ragePerSecond = ragePerSecond + offHandRage;
 		end
 	whirlwindDamage = CalcWhirlwind(critChance, AbilityHitChance, impaleRank, normalizedMHDamage);
 	bloodthirstDamage = CalcBloodthirst(critChance, AbilityHitChance, impaleRank, attackPower);
-	SendMessage("Avg Overpower: " .. overpowerDamage);
-	SendMessage("Avg Whirlwind: " .. whirlwindDamage);
-	SendMessage("Avg Bloodthirst: " .. bloodthirstDamage);	
-	SendMessage("Estimated flurry uptime: " .. flurryUptime * 100 .. "%.");
-	
-	SendMessage("DPS: " .. Round(mainHandDPS + offHandDPS + bloodthirstDamage / 6 + whirlwindDamage / 10));
-	
-	
-	
-	
+	dps = Round(mainHandDPS + offHandDPS + bloodthirstDamage / 6 + whirlwindDamage / 10);
+	hsDamage = CalcHeroicstrike(critChance, AbilityHitChance, impaleRank, weaponDamageMH);
+	return overpowerDamage, flurryUptime, whirlwindDamage, bloodthirstDamage, dps, ragePerSecond, hsDamage;
 end
 
-function CalcAutoAttackDamage(weaponDamage, weaponSpeed, hits, dodgeChance, crits, miss, weaponSkill, overpowerDamage, flurryUptime, flurryModifier)
+function CalcAutoAttackDamage(weaponDamage, weaponSpeed, hits, dodgeChance, crits, miss, weaponSkill, overpowerDamage, flurryUptime, flurryModifier, unbridledWrath)
 	damage = (0.4 * weaponDamage * CalcGlance(weaponSkill) + overpowerDamage * dodgeChance + weaponDamage * hits + (weaponDamage * 2 * crits));
-	return damage / (weaponSpeed * (1 + flurryModifier * flurryUptime));
+	rage = (damage - overpowerDamage * dodgeChance) / 30 + (unbridledWrath * 0.08 * (hits + crits));
+	return damage / (weaponSpeed * (1 + flurryModifier * flurryUptime)), rage / weaponSpeed;
 end
 
 function CalcAAHitTable(hitBonus, dodgeChance, critChance, missChance)
@@ -154,7 +224,6 @@ function CalcFlurryUptime(speedMH, speedOH, critChance, offHandCrit)
 	if((speedOH ~= nil) and (speedOH > speedMH)) then
 		flurryBuffUptime = speedOH * 2 * 0.7;
 	end
-	SendMessage(critChance .. offHandCrit);
 	attacksPerFlurry = attacksPerFlurry + flurryBuffUptime / 10; 	--+whirlwind attacks
 	attacksPerFlurry = attacksPerFlurry + flurryBuffUptime / 6; 	--+bloodthirst attacks
 	flurry = 1 - math.pow(1-critChance, attacksPerFlurry);
@@ -164,9 +233,9 @@ function CalcFlurryUptime(speedMH, speedOH, critChance, offHandCrit)
 		flurry = flurry * (Round(speedOH / speedMH));
 		flurry = (flurryOH + flurry) / (speedOH / speedMH + speedMH / speedOH);
 	else
-		return Round(flurry);
+		return (flurry);
 	end
-	return Round(flurry);
+	return (flurry);
 end
 
 function CalcBloodthirst(critChance, AbilityHitChance, impaleRank, attackPower)
@@ -185,6 +254,11 @@ function CalcOverpower(critChance, AbilityHitChance, impaleRank, overpowerRank, 
 		overPowerCritChance = 1.00;
 	end
 	return overPowerCritChance, Round((AbilityHitChance - overPowerCritChance) * overpowerDamage + (overpowerDamage * (overPowerCritChance * (2 + impaleRank * 0.05))))
+end
+
+function CalcHeroicstrike(critChance, AbilityHitChance, impaleRank, weaponDamageMH)
+	hsDamage = weaponDamageMH + 187;
+	return Round((AbilityHitChance - critChance) * hsDamage + (hsDamage * (critChance * (2 + impaleRank * 0.05))))
 end
 
 function CalcGlance(weaponSkill)
