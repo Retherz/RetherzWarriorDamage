@@ -8,7 +8,7 @@ Requires: "BonusScanner". This addon can be found in many 1.12 packages or here:
 
 You can download this addon by clicking the green "Clone or download" button up to your right. Once downloaded you will recieve a zipped file, unzip this file to your World Of Warcraft installation path -> Interface -> Addons. If the folder has a trailing "-master" remove this for the addon to function properly.
 
-#Usage
+# Usage
 Once logged in type '/rwd' and data will be printed in your chat. Your stats from gear, buffs and consumables will affect the result.
 
 
