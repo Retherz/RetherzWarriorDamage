@@ -1,6 +1,8 @@
 # RWarriorDamage
 Simple World of Warcraft 1.12 Warrior Average DPS Estimation based on current stats and weapon skills assuming constant use of Bloodthirst and Whirlwind and any spare rage being dumped to Heroic Strike. This addon makes swapping items for optimal DPS easy. As of now this addon is only relevant as Alliance.
 
+![alt text](https://i.imgur.com/skN0KSU.png)
+
 # Installation
 Requires: "BonusScanner". This addon can be found in many 1.12 packages or here: https://wow.curseforge.com/projects/project-1352/files?filter-game-version=2020709689%3A1 http://www.vanilla-addons.com/dls/bonusscanner/ 
 
