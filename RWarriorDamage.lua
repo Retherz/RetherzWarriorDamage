@@ -53,6 +53,11 @@ function CalculateDamage()
 	baseAP, posBuffAP, negBuffAP = UnitAttackPower("player");
 	attackPower = baseAP + posBuffAP + negBuffAP;
 	
+	--test for shield
+	if(hasOffhand == true and speedOH == nil) then
+		hasOffhand = false;
+	end
+	
 	--Off hand crit
 	offHandCrit = critChance + (weaponSkillOH - weaponSkillMH) * 0.0004;
 	
@@ -102,7 +107,7 @@ weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attack
 	normalDPS = dps;
 	SendMessage("OP: " .. baseoverpowerDamage .. " WW: " .. basewhirlwindDamage .. " BT: " .. basebloodthirstDamage);
 	SendMessage("Flurry uptime: " .. Round(baseflurryUptime * 100) .. "% Rage per Second: " .. Round(baseragePerSecond));
-	basehsPS = Round((baseragePerSecond - 7.5) / heroicStrikeCost);
+	basehsPS = ((baseragePerSecond - 7.5) / heroicStrikeCost);
 	basedpsFromHS = 0;
 	if(baseragePerSecond > 7.5) then
 		hspPerS = Round((1 / basehsPS) * 1.5);
@@ -119,9 +124,9 @@ weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attack
 weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
 	SendMessage("OP: +" .. Round(overpowerDamage - baseoverpowerDamage) .. " WW: +" .. Round(whirlwindDamage - basewhirlwindDamage) .. " BT: +" .. Round(bloodthirstDamage - basebloodthirstDamage));
 	SendMessage("Flurry uptime: +" .. Round((flurryUptime - baseflurryUptime)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
-	hsPS = Round((ragePerSecond - 7.5) / heroicStrikeCost);
+	hsPS = ((ragePerSecond - 7.5) / heroicStrikeCost);
 	dpsFromHS = 0;
-	if(baseragePerSecond > 7.5) then
+	if(ragePerSecond > 7.5) then
 		hspPerS = Round((1 / hsPS) * 1.5);
 		SendMessage("Heroic Strikes 1 per " .. hspPerS .. " seconds.");
 		dpsFromHS = (hsDamage - weaponDamageMH) / hspPerS;
@@ -136,9 +141,9 @@ weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attack
 weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
 	SendMessage("OP: +" .. Round(overpowerDamage - baseoverpowerDamage) .. " WW: +" .. Round(whirlwindDamage - basewhirlwindDamage) .. " BT: +" .. Round(bloodthirstDamage - basebloodthirstDamage));
 	SendMessage("Flurry uptime: +" .. Round((flurryUptime - baseflurryUptime)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
-	hsPS = Round((ragePerSecond - 7.5) / heroicStrikeCost);
+	hsPS = ((ragePerSecond - 7.5) / heroicStrikeCost);
 	dpsFromHS = 0;
-	if(baseragePerSecond > 7.5) then
+	if(ragePerSecond > 7.5) then
 		hspPerS = Round((1 / hsPS) * 1.5);
 		SendMessage("Heroic Strikes 1 per " .. hspPerS .. " seconds.");
 		dpsFromHS = (hsDamage - weaponDamageMH) / hspPerS;
@@ -267,14 +272,6 @@ function CalcGlance(weaponSkill)
 		multiplier = 1
 	end
 	return multiplier;
-end
-
-function printData(data)
-	SendMessage("------------------------");
-	for i, name in ipairs(data) do
-		SendMessage(data)
-	end
-	SendMessage("------------------------");
 end
 
 function SendMessage(message)
