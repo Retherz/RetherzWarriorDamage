@@ -11,3 +11,5 @@ Once logged in type '/rwd' and data will be printed in your chat. Your stats fro
 
 
 I appreciate any feedback and suggestions.
+
+Special thanks to Relada for testing and Kronos Discord for providing me with warrior insight.
