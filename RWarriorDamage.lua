@@ -219,7 +219,10 @@ function CalcAAHitTable(hitBonus, dodgeChance, critChance, missChance)
 	if((hits - crits) < 0) then
 		crits = hits;
 		hits = 0;
+	else
+		hits = hits - crits;
 	end
+	SendMessage("Hits : " .. hits .. " Crits: " .. crits .. " Miss: " .. miss);
 	return hits, crits, miss;
 end
 

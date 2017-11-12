@@ -1,6 +1,6 @@
 ## Interface: 11200
 ## Title: |cffDA70D6R|rWarriorDamage
-## Version: 1.1.2
+## Version: 1.1.3
 ## Notes: Command: /rwd
 ## DefaultState: enabled
 ## Dependencies: BonusScanner
