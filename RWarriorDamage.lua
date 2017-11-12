@@ -206,13 +206,13 @@ end
 function CalcAutoAttackDamage(weaponDamage, weaponSpeed, hits, dodgeChance, crits, miss, weaponSkill, overpowerDamage, flurryUptime, flurryModifier, unbridledWrath)
 	damage = (0.4 * weaponDamage * CalcGlance(weaponSkill) + overpowerDamage * dodgeChance + weaponDamage * hits + (weaponDamage * 2 * crits));
 	rage = (damage - overpowerDamage * dodgeChance) / 30 + (unbridledWrath * 0.08 * (hits + crits));
-	return damage / (weaponSpeed * (1 + flurryModifier * flurryUptime)), rage / weaponSpeed;
+	return damage / (weaponSpeed / (1 + flurryModifier * flurryUptime)), rage / weaponSpeed;
 end
 
 function CalcAAHitTable(hitBonus, dodgeChance, critChance, missChance)
 	miss =  missChance - hitBonus;
 	crits = critChance;
-	if(missChance < 0) then
+	if(miss < 0) then
 		miss = 0;
 	end
 	hits = 0.6 - dodgeChance - miss;			--glances are always 40%;
