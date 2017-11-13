@@ -123,7 +123,7 @@ weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attack
 	overpowerDamage, flurryUptime, whirlwindDamage, bloodthirstDamage, dps, ragePerSecond, hsDamage = CalculateDPS(critChance + 0.01, impaleRank, overpowerRank, dodgeChanceMH, hitBonus, missChance, hitBonusOH, dodgeChanceOH, offHandCrit + 0.01, speedMH, speedOH,
 weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
 	SendMessage("OP: +" .. Round(overpowerDamage - baseoverpowerDamage) .. " WW: +" .. Round(whirlwindDamage - basewhirlwindDamage) .. " BT: +" .. Round(bloodthirstDamage - basebloodthirstDamage));
-	SendMessage("Flurry uptime: +" .. Round((flurryUptime - baseflurryUptime)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
+	SendMessage("Flurry uptime: " .. Round((flurryUptime / baseflurryUptime - 1)* 100) .. "% increase. Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
 	hsPS = ((ragePerSecond - 7.5) / heroicStrikeCost);
 	dpsFromHS = 0;
 	if(ragePerSecond > 7.5) then
@@ -140,7 +140,7 @@ weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attack
 	overpowerDamage, flurryUptime, whirlwindDamage, bloodthirstDamage, dps, ragePerSecond, hsDamage = CalculateDPS(critChance, impaleRank, overpowerRank, dodgeChanceMH, hitBonus + 0.01, missChance, hitBonusOH + 0.01, dodgeChanceOH, offHandCrit, speedMH, speedOH,
 weaponDamageMH, weaponSkillMH, flurryRank, weaponDamageOH, weaponSkillOH, attackPower, unbridledWrath);
 	SendMessage("OP: +" .. Round(overpowerDamage - baseoverpowerDamage) .. " WW: +" .. Round(whirlwindDamage - basewhirlwindDamage) .. " BT: +" .. Round(bloodthirstDamage - basebloodthirstDamage));
-	SendMessage("Flurry uptime: +" .. Round((flurryUptime - baseflurryUptime)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
+	SendMessage("Flurry uptime: +" .. Round((flurryUptime / baseflurryUptime - 1)* 100) .. "% Rage per Second: +" .. Round((ragePerSecond - baseragePerSecond)));
 	hsPS = ((ragePerSecond - 7.5) / heroicStrikeCost);
 	dpsFromHS = 0;
 	if(ragePerSecond > 7.5) then
@@ -222,7 +222,6 @@ function CalcAAHitTable(hitBonus, dodgeChance, critChance, missChance)
 	else
 		hits = hits - crits;
 	end
-	SendMessage("Hits : " .. hits .. " Crits: " .. crits .. " Miss: " .. miss);
 	return hits, crits, miss;
 end
 
